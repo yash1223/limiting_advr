@@ -1,0 +1,15 @@
+Possible reason on why time change model worked below
+In our model we saw that at a certain time point the betas are flat (limited observations 2007 + varying intercept = no slope)
+Lets look at varying model slopes pre and post 2007 to confirm this
+Don't see anything here in plots
+Which makes sense since relationship should be more dependent on demand than time
+Lets find if with varying itnercept alone (without varying slope), slope is positive and eventually zeros out
+
+For fixed intercept when we have two points close to each other with drastically different PDL we will get an extreme slope
+This occurs in both the positive and negative direction.
+Some of these differences in PDL may be worth examining because they are quite extreme
+
+If we start to subset the slopes from the fixed linear model to remove extremes we see a bit of a pattern but not the same pattern.
+We see betas which increase as demand avg increases and decrease at high levels of demand avg.
+
+

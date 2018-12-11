@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+percentiles = c(0.025, 0.5, 0.975)
+jags_data <- readRDS( "output_sample/model2-full/mod.rds")
+
+mcmc_array <- jags_data$BUGSoutput$sims.array
+mcmc_array[5]
+is.array(mcmc_array)
+
+summary <- jags_data$BUGSoutput$summary
+summary[92]
+```
+
+```{r}
+jags_output <- function(data, variable_name, size, percentiles){
+  output <- data[paste0(variable_name,"[",1:size,"]"), paste0(100*percentiles, "%")]
+}
+
+yrep <- jags_output(data = summary, variable_name = "a.c", size = 10, percentiles =  c(0.025, 0.5, 0.975))
+yrep
+```
+
+
+```{r}
+
+plot_jags_cor <- data.frame(a.c, beta.c)
+plot_jags <- data.frame(yrep.i1, getnc.i, getnt.i, jagsdata$luup.i, getnr.i, demand.i)
+
+```
+
+```{r}
+yrep1 <- jags_output(data = summary, variable_name = "a.c", size = 25, percentiles = c(0.025, 0.5, 0.975))
+
+```
+
+```{r}
+#mean.fpem <- summary[,1]
+#lower.fpem <- summary[, 3]
+#median.fpem <- summary[, 5]
+#upper.fpem <- summary[, 7]
+#names.fpem <- summary[, 0]
+
+percentiles.fpem <- summary[, c(0,3,5,7)]
+percentiles = data.frame(names.fpem,percentiles.fpem)
+
+a_c <- percentiles[1:92, ]
+beta_c <- percentiles[93:184, ]
+
+plot_jags_cor <- data.frame(a_c, beta_c)
+```
+
+```{r}
+
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

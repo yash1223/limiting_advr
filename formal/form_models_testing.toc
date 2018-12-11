@@ -1,0 +1,6 @@
+\contentsline {section}{\numberline {1}Notation}{II}
+\contentsline {section}{\numberline {2}PDL Varying Intercept Models And Slope(without shrinkage on slope)}{1}
+\contentsline {section}{\numberline {3}PDL Varying Intercept and Slope Models}{2}
+\contentsline {subsection}{\numberline {3.1}without correlation}{2}
+\contentsline {subsection}{\numberline {3.2}with correlation}{3}
+\contentsline {subsection}{\numberline {3.3}prediction plots}{4}

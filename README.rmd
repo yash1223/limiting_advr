@@ -1,0 +1,140 @@
+---
+title: "Limiting, Proportion of Unmet Need"
+output: github_document
+author: Leontine Alkema and Greg Guranich 
+---
+
+## Project Background
+We are estimating the proportion of limiting within unmet need for contraceptives (country level proportions). Limiting is when a women wishes not to have children anymore. Spacing is when a women wishes not to have children for a specified term
+
+## SETUP
+- clone the repository to your local machine
+- create R project from existing directory (chose this folder "~/limiting_advr")
+- Open README.rmd this is the master script!
+- run the code block labeled 'REQUIRED SETUP'
+- do not run any more of master script, briefly look at the master script if you like
+- open whichever subscript to get started!
+- subscripts (that may be turned into R functions) begin with "sub_"
+
+## Directories
+- /R ~ functions
+- /data ~ data
+- /output_sample ~ sample model files for you to work with
+
+## .gitignore Directories
+The following full directories are not shared on git due to size contraints
+
+- /output ~ model files (by runname), 
+- /formal ~ Latex scripts, associated image files, documentation of math
+- /fig ~ image files
+
+
+# REQUIRED SETUP
+```{r, eval = FALSE}
+demandestimates.dir <- "data/demandnew.csv" #data produced by a model
+cprestimates.dir <- "data/cpr.csv"
+countryinfo.dir <- "data/Country-and-area-classification.csv"
+rawdata_dhs.dir <- "data/dhs_2018_edit.csv"
+rawdata_mics.dir <- "data/mics_2018_edit.csv"
+fp20.dir<- "data/fp2020.csv" #list countries in fp2020 if we wish to subset
+
+Rfiles <- list.files(file.path(paste0(getwd(),"/R/")), ".R") 
+sapply(paste0(paste0(getwd(),"/R/"), Rfiles), source) 
+source("sub_loadpackages.R")
+
+SSA <- FALSE
+NOTSSA <- FALSE
+startyear <- 1985
+#startyear <- 2007
+endyear <- 2020 #2020 #2030 # earlier end year for testing (less time to run jags)
+nyears <- endyear - startyear + 1
+do.validation <- FALSE
+addarma <- FALSE
+```
+
+# testing pull request again 4
+```{r, eval = FALSE, include = FALSE}
+runname <- "model2_spline00"
+MakeDirs(runname)
+output.dir <- MakeDirs(runname)
+
+source("sub_readandprocessdata.R")
+parnames <- c("yrepluup.i","a.c","beta.c", "eta.j")
+
+# if (SSA == TRUE) {
+#   model.file <- WriteModel2SSA(output.dir, modelname = "model", addarma  = addarma)
+# } else {
+#   model.file <- WriteModel2(output.dir, modelname = "model", addarma  = addarma)
+# }
+model.file <- WriteModel2_splines02(output.dir, modelname = "model", addarma  = addarma)
+
+file.show(model.file)
+mod <-jags.parallel(data = jagsdata, inits = inits(), #NULL,
+                    parameters.to.save=parnames,
+                    model.file = model.file,
+                    n.chains=4, n.burnin = 2000, n.iter = 10000, n.thin = 8)
+#                   n.chains=4, n.burnin = 1000, n.iter = 3000, n.thin = 2) # 
+#     n.chains=3, n.burnin = 500, n.iter = 1000, n.thin = 2) # test
+#     n.chains=2, n.burnin = 5, n.iter = 10, n.thin = 1) # test
+
+saveRDS(mod, file = paste0(output.dir, "mod.rds"))
+# if you need to reload it:
+#mod <- readRDS(file = paste0(output.dir, "mod.rds"))
+mcmc.array <- mod$BUGSoutput$sims.array
+
+#source("sub_convergence.R")
+#source("sub_residuals.R")
+#source("sub_timeplot.R")
+#source("sub_validationoutput.R")
+source("sub_postproc_forEDA.R")
+```
+
+
+## To do list ...
+### DATA PREP FOR MODEL
+Nutcha
+
+Feature engineering/cleaning
+
+<!-- -make data frames that break down data by group ~ hold off on this -->
+<!-- 	-unit level data (country) -->
+<!-- 	-link from unit to next level (subregion) -->
+<!-- 	-link to next parent (region) -->
+
+-dynamic code to choose subsets of data, interacts with main script
+	-subsets for area
+	-SSA (sub saharan africa)
+	-Non SSA
+	-All
+	-subsets of time
+
+Greg
+
+-making index for jags
+	-ie. Getc.i, gett.i, getr.c, ...
+-most important for checks (function testing)
+
+Making the jags object
+-to dp…
+
+...Run model
+
+
+Yash
+
+-residual plot ....
+-country fits plots
+-make code into function that allows user to specify parameter of interest
+-function to get point estimates from jags output (median, and CI)
+-function to merge output of the above function with data
+	-data can be found in jags object
+
+Streamline other model validation
+
+-LOO
+-rhat
+
+Plotting code that use non standard evaluation (NSE)
+-send document to yash and nutcha
+https://dplyr.tidyverse.org/articles/programming.html
+

@@ -1,0 +1,6 @@
+-changed 1/(2*seluup.i[i]^2 + nonsamplsd^2) to 1/(seluup.i[i]^2 + nonsamplsd^2)
+-added log likelihood to model for luup and lup
+-changed model code, typos ie totaldemand.ct should be demand.ct
+-made edits to parameter model save
+-selup.i and seluup.i point estimates in sub_residuals
+-standardized residuals added to plotting code

@@ -1,0 +1,4 @@
+re write this model in r
+if we are using time change do we include AR1 (delta)
+if we have a model that is just an intercept model then we need to fix alpha.c to come from alpha.r #combihack
+

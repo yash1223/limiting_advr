@@ -1,0 +1,104 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+predicted <- readRDS("output_sample/2nd_spline_reparam/mod.rds")
+
+actual <- readRDS("output_sample/model2-full/mod.rds")
+```
+
+Actual data : jagsdata
+  country_name -> getnc.i
+  year -> gett.i
+    31 -> 2017
+  luup.i -> actual data
+```{r}
+actual_data <- plot_jags$jagsdata.luup.i
+actual_year <- plot_jags$getnt.i
+actual_country_name <- plot_jags$getnc.i
+
+plot1 <- data.frame(actual_country_name, actual_year, actual_data)
+plot1 <- plot1 %>% 
+  rename(year = actual_year, country = actual_country_name) %>% 
+  arrange(actual_country_name, actual_year)
+plot1
+
+#max(actual_year)
+#min(actual_year)
+#length(unique(plot1$actual_year))
+#dim(plot1)
+
+```
+  
+  
+Predicted data : readRDS("output_sample/2nd_spline_reparam/mod.rds")
+  eta.ct -> country(rows) time(column)
+```{r}
+predicted_country <- predicted$BUGSoutput$median$eta.ct
+
+#typeof(predicted_country)
+#dim(predicted_country) 
+
+#colnames(predicted_country) <- 1981:2016
+
+qaz <- data.frame(unique(plot_jags$getnc.i))
+#colnames(qaz) <- "country"
+
+plot4 <- data.frame(qaz, predicted_country)
+colnames(plot4) <- c("country", 1981:2016)
+
+plot2 <- plot4 %>% 
+  gather(key = year, value = value, 2:37, convert = TRUE)
+plot2
+```
+
+```{r}
+
+final_plot <- plot1 %>% 
+  inner_join(plot2, by = c("country", "year")) %>% 
+  rename(actual_value = actual_data, predicted_value = value) %>% 
+  arrange(country, year)
+
+final_plot
+#dim(final_plot)
+```
+
+
+```{r}
+
+actual_predicted_plot <- function(data, country_name){
+data %>% 
+  gather(key = type, value = value, 3:4) %>% 
+  filter(country == country_name) %>% 
+  ggplot(aes(x = year, y = value, group = type, color = type, shape = type)) +
+  geom_line() +
+  geom_point()
+
+}
+```
+
+```{r}
+actual_predicted_plot(final_plot,  "Bangladesh")
+```
+
+```{r}
+actual_predicted_plot(final_plot, "India")
+```
+
+```{r}
+actual_predicted_plot(final_plot, country_name = "Uganda")
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
